@@ -1,3 +1,18 @@
+<?php 
+
+//ob_start();
+//session_start();
+
+	if(isset($_SESSION['usuariowva']) && (isset($_SESSION['senhawva'])))  {
+
+		//header('Location: home.php');
+		exit;
+	}
+
+	include("conexao/conecta.php");
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   
@@ -48,7 +63,7 @@
 					</li>
 					
 					<li class="">						
-						<a href="index.html" class="">
+						<a href="../" class="">
 							<i class="icon-chevron-left"></i>
 							Acessar o site
 						</a>
@@ -67,10 +82,71 @@
 
 
 <div class="account-container">
+
+	<?php
+
+		if(isset($_POST['logar'])) {
+
+		//Recuperar dados form
+		$usuario = trim(strip_tags($_POST['usuario']));
+		$senha = trim(strip_tags($_POST['senha']));
+
+		//Selecionar BD e comparar com as do form
+		$select = "SELECT * FROM login WHERE usuario=:usuario AND senha=:senha";
+		try {
+
+			$result = $conexao -> prepare($select);
+			$result->bindParam(':usuario', $usuario, PDO::PARAM_STR);
+			$result->bindParam(':senha', $senha, PDO::PARAM_STR);
+			$result->execute();
+			$contar = $result->rowCount(); //Conta quantos registros o BD tem
+
+			if($contar > 0) {
+
+				$usuario = $_POST['usuario'];
+				$senha = $_POST['senha'];
+
+				$_SESSION['usuariowva'] = $usuario;
+				$_SESSION['senhawva'] = $senha;
+				
+				echo '					
+					<div class="alert alert-success">
+
+						<button type="button" class="close" data-dismiss="alert">x</button>
+						<strong>Logado com sucesso!</strong> Redirecionando para o sistema.
+						
+					</div>
+				';
+
+				header("Refresh:2, home.php");
+				
+			} else {
+
+				echo '					
+					<div class="alert alert-danger">
+
+						<button type="button" class="close" data-dismiss="alert">x</button>
+						<strong>Erro ao logar!</strong> Dados incorretos.
+						
+					</div>
+				';
+
+			}
+
+		} catch (PDOException $e) {
+
+			echo $e;
+
+		}
+
+
+	} //se clicar no botão, entrar no sistema
+
+	?>
 	
 	<div class="content clearfix">
 		
-		<form action="#" method="post">
+		<form action="#" method="post" enctype="multipart/form-data">
 		
 			<h1>Faça seu Login</h1>		
 			
@@ -80,21 +156,20 @@
 				
 				<div class="field">
 					<label for="username">Usuário</label>
-					<input type="text" id="username" name="username" value="" placeholder="Usuário" class="login username-field" />
+					<input type="text" id="username" name="usuario" value="" placeholder="Usuário" class="login username-field" />
 				</div> <!-- /field -->
 				
 				<div class="field">
 					<label for="password">Senha:</label>
-					<input type="password" id="password" name="password" value="" placeholder="Senha" class="login password-field"/>
+					<input type="password" id="password" name="senha" value="" placeholder="Senha" class="login password-field"/>
 				</div> <!-- /password -->
 				
 			</div> <!-- /login-fields -->
 			
-			<div class="login-actions">
-				
+			<div class="login-actions">				
 			
 									
-				<button class="button btn btn-success btn-large">Entrar no Sistema</button>
+				<input type="submit" name="logar" value="Entrar no Sistema" class="button btn btn-success btn-large">
 				
 			</div> <!-- .actions -->
 			
