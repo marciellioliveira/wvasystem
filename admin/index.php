@@ -1,11 +1,11 @@
 <?php 
 
-//ob_start();
-//session_start();
+ob_start();
+session_start();
 
 	if(isset($_SESSION['usuariowva']) && (isset($_SESSION['senhawva'])))  {
 
-		//header('Location: home.php');
+		header('Location: home.php');
 		exit;
 	}
 
@@ -14,7 +14,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
   
 <head>
     <meta charset="utf-8">
@@ -85,6 +85,26 @@
 
 	<?php
 
+		if(isset($_GET['acao'])) {
+
+			if(!isset($_POST['logar'])) {
+
+			$acao = $_GET['acao'];
+			if($acao=='negado') {
+
+				echo '					
+					<div class="alert alert-danger">
+
+						<button type="button" class="close" data-dismiss="alert">x</button>
+						<strong>Erro!</strong> Você precisa estar logado para acessar o sistema.
+						
+					</div>
+				';
+
+			}
+}
+		}
+
 		if(isset($_POST['logar'])) {
 
 		//Recuperar dados form
@@ -118,7 +138,7 @@
 					</div>
 				';
 
-				header("Refresh:2, home.php");
+				header("Refresh:2, home.php?acao=welcome");
 				
 			} else {
 
